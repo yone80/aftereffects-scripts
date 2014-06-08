@@ -21,7 +21,7 @@ After Effects Scripts
 #### transferTransform.jsx
 選択したレイヤーのアンカーポイントにヌルレイヤーを親レイヤーとして追加、位置・回転・スケールのキーフレームもそのヌルレイヤーにコピー、選択したレイヤーの位置・回転・スケールはリセット
 ### ScriptUI Panels
-#### Property Controller
+#### Property Controller.jsx
 選択したレイヤーの指定したプロパティをまとめて変更 - [Demo](http://www.screencast.com/t/E4PBqe7o)
-#### Selection Rack
+#### Selection Rack.jsx
 レイヤー選択範囲を "shift+click" で一時的に保存、click で呼び出し - [Demo](http://www.screencast.com/t/gzkCADn5TakM)
