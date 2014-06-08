@@ -1,5 +1,6 @@
 After Effects Scripts
 ====================
+After Effects CC でしか動作確認してないので他の環境で動くかは不明
 #### addCamera.jsx
 コンポジションにリグ付きのカメラ(28mm)を追加
 #### copyPosition.jsx
