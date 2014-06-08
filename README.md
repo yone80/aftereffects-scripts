@@ -20,3 +20,8 @@ After Effects Scripts
 最後に選択したレイヤーの位置(World)を他の選択したレイヤーにコピー、キーフレームがある場合まとめて同じ距離だけ移動
 #### transferTransform.jsx
 選択したレイヤーのアンカーポイントにヌルレイヤーを親レイヤーとして追加、位置・回転・スケールのキーフレームもそのヌルレイヤーにコピー、選択したレイヤーの位置・回転・スケールはリセット
+### ScriptUI Panels
+#### Property Controller
+選択したレイヤーの指定したプロパティをまとめて変更
+#### Selection Rack
+レイヤー選択範囲を "shift+click" で一時的に保存、click で呼び出し
