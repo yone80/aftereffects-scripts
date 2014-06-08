@@ -1,2 +1,2 @@
-aftereffects-scripts
+After Effects Scripts
 ====================
