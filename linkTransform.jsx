@@ -60,7 +60,7 @@ var expOpacity = expHead +
 //========================================
 // Functions
 //========================================
-var isAVLayerInstance = function(layer) {
+var instanceOfAVLayer = function(layer) {
   return (layer instanceof AVLayer) || (layer instanceof ShapeLayer) || (layer instanceof TextLayer);
 };
 
@@ -75,7 +75,7 @@ var addExpressionController = function(layer, name, value, matchName) {
 
 //----------------------------------------
 var setupLayer = function(layer, refLayer) {
-  if(!isAVLayerInstance(layer)) return;
+  if(!instanceOfAVLayer(layer)) return;
   
   var dimCheck = null;
   
@@ -120,7 +120,7 @@ var setupLayer = function(layer, refLayer) {
   var selLayers = comp.selectedLayers.slice(0, -1), 
       refLayer = comp.selectedLayers[comp.selectedLayers.length - 1];
   
-  if(!isAVLayerInstance(refLayer)) return;
+  if(!instanceOfAVLayer(refLayer)) return;
   addExpressionController(refLayer, "Random Amp", 0, "ADBE Slider Control");
   
   for(var i = 0; i < selLayers.length; i++)

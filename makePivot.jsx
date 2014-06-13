@@ -7,12 +7,12 @@
 //========================================
 // Functions
 //========================================
-var isAVLayerInstance = function(layer) {
+var instanceOfAVLayer = function(layer) {
   return (layer instanceof AVLayer) || (layer instanceof ShapeLayer) || (layer instanceof TextLayer);
 };
 
 var addPivot = function(layer, comp) {
-  if(!isAVLayerInstance(layer)) return null;
+  if(!instanceOfAVLayer(layer)) return null;
   
   var pivot = comp.layers.addNull();
   

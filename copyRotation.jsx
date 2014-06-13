@@ -7,7 +7,7 @@
 //========================================
 // Functions
 //========================================
-var isAVLayerInstance = function(layer) {
+var instanceOfAVLayer = function(layer) {
   return (layer instanceof AVLayer) || (layer instanceof ShapeLayer) || (layer instanceof TextLayer);
 };
 
@@ -35,7 +35,7 @@ var copyRotation2D = function(selLayers, refLayer) {
   } while(refLayer = refLayer.parent)
   
   for(var i = 0; i < selLayers.length; i++) {
-    if(isAVLayerInstance(selLayers[i]) && !selLayers[i].threeDLayer)
+    if(instanceOfAVLayer(selLayers[i]) && !selLayers[i].threeDLayer)
       setPropertyValue(selLayers[i].rotation, refRotation, PropertyValueType.OneD);
   }
 };
@@ -44,7 +44,7 @@ var copyRotation3D = function(selLayers, refLayer, comp) {
   var saveParent, tmpOrientation;
   
   for(var i = 0; i < selLayers.length; i++) {
-    if((isAVLayerInstance(selLayers[i]) && selLayers[i].threeDLayer) || (selLayers[i] instanceof CameraLayer)) {
+    if((instanceOfAVLayer(selLayers[i]) && selLayers[i].threeDLayer) || (selLayers[i] instanceof CameraLayer)) {
       saveParent = selLayers[i].parent;
       selLayers[i].parent = refLayer;
       
@@ -78,9 +78,9 @@ var copyRotation3D = function(selLayers, refLayer, comp) {
   var selLayers = comp.selectedLayers.slice(0, -1), 
       refLayer = comp.selectedLayers[comp.selectedLayers.length - 1];
   
-  if((isAVLayerInstance(refLayer) && refLayer.threeDLayer) || (refLayer instanceof CameraLayer))
+  if((instanceOfAVLayer(refLayer) && refLayer.threeDLayer) || (refLayer instanceof CameraLayer))
     copyRotation3D(selLayers, refLayer, comp);
-  else if(isAVLayerInstance(refLayer) && !refLayer.threeDLayer)
+  else if(instanceOfAVLayer(refLayer) && !refLayer.threeDLayer)
     copyRotation2D(selLayers, refLayer);
   
   app.endUndoGroup();
