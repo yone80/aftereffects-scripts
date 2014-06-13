@@ -29,9 +29,7 @@
     if(curPos.numKeys > 0) {
       for(var k = 1; k <= curPos.numKeys; k++) {
         keyValue = curPos.keyValue(k);
-        curPos.setValueAtKey(k, [keyValue[0] + (refAnchorVal[0] - curPosVal[0]), 
-                                 keyValue[1] + (refAnchorVal[1] - curPosVal[1]), 
-                                 keyValue[2] + (refAnchorVal[2] - curPosVal[2])]);
+        curPos.setValueAtKey(k, keyValue + (refAnchorVal - curPosVal));
       }
     } else {
       curPos.setValue(refAnchorVal);
