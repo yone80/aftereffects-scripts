@@ -3,154 +3,104 @@
  * @author twitter.com/yone80 (Satoru Yonekura)
  */
 
-//========================================
-// Constructor
-//========================================
-function KeyContainer(valueType) {
-  this.propertyValueType = valueType;
-  this.keys = [];
-}
-
 
 //========================================
 // Functions
 //========================================
-var isAVLayerInstance = function(layer) {
+var instanceOfAVLayer = function(layer) {
   return (layer instanceof AVLayer) || (layer instanceof ShapeLayer) || (layer instanceof TextLayer);
 };
 
-
 //----------------------------------------
-var collectAllKeyframes = function(prop) {
-  if(prop.numKeys === 0) {
-    alert("ERROR : collectAllKeyframes()" + "\n" + "- Property.numKeys === 0");
-    return null;
+var copyKeyframe = function(srcProp, keyIndex, dstProp, time) {
+  if(time === undefined) time = srcProp.keyTime(keyIndex);
+  var newKey = dstProp.addKey(time), 
+      keyRoving = false;
+  
+  dstProp.setValueAtKey(newKey, srcProp.keyValue(keyIndex));
+  
+  dstProp.setTemporalAutoBezierAtKey(newKey, srcProp.keyTemporalContinuous(keyIndex));
+  dstProp.setTemporalContinuousAtKey(newKey, srcProp.keyTemporalAutoBezier(keyIndex));
+  dstProp.setTemporalEaseAtKey(newKey, srcProp.keyInTemporalEase(keyIndex), 
+                                       srcProp.keyOutTemporalEase(keyIndex));
+  
+  if( srcProp.propertyValueType === PropertyValueType.TwoD_SPATIAL || 
+      srcProp.propertyValueType === PropertyValueType.ThreeD_SPATIAL) 
+  {
+    dstProp.setSpatialContinuousAtKey(newKey, srcProp.keySpatialContinuous(keyIndex));
+    dstProp.setSpatialAutoBezierAtKey(newKey, srcProp.keySpatialAutoBezier(keyIndex));
+    dstProp.setSpatialTangentsAtKey(newKey, srcProp.keyInSpatialTangent(keyIndex), 
+                                            srcProp.keyOutSpatialTangent(keyIndex));
+    keyRoving = srcProp.keyRoving(keyIndex);
   }
   
-  var keyContainer = new KeyContainer(prop.propertyValueType);
-  var keyTime, keyValue,
-      autoBezierT, contBezierT, 
-      inEase, outEase, 
-      autoBezierS, contBezierS, 
-      inTangent, outTangent, 
-      roving, 
-      inInterp, outInterp;
+  dstProp.setInterpolationTypeAtKey(newKey, srcProp.keyInInterpolationType(keyIndex), 
+                                            srcProp.keyOutInterpolationType(keyIndex));
   
-  for(var i = 1; i <= prop.numKeys; i++) {
-    keyTime = prop.keyTime(i);
-    keyValue = prop.keyValue(i);
-    
-    autoBezierT = prop.keyTemporalAutoBezier(i);
-    contBezierT = prop.keyTemporalContinuous(i);
-    inEase = prop.keyInTemporalEase(i);
-    outEase = prop.keyOutTemporalEase(i);
-  
-    if(prop.propertyValueType === PropertyValueType.TwoD_SPATIAL || prop.propertyValueType === PropertyValueType.ThreeD_SPATIAL) {
-      autoBezierS = prop.keySpatialAutoBezier(i);
-      contBezierS = prop.keySpatialContinuous(i);
-      inTangent = prop.keyInSpatialTangent(i);
-      outTangent = prop.keyOutSpatialTangent(i);
-      roving = prop.keyRoving(i);
-    }
-    
-    inInterp = prop.keyInInterpolationType(i);
-    outInterp = prop.keyOutInterpolationType(i);
-    
-    keyContainer.keys[i - 1] = { "keyIndex": i, "keyTime": keyTime, "keyValue": keyValue, 
-                                 "contBezierT": contBezierT, "autoBezierT": autoBezierT, 
-                                 "inEase": inEase, "outEase": outEase, 
-                                 "contBezierS": contBezierS, "autoBezierS": autoBezierS,
-                                 "inTangent": inTangent, "outTangent": outTangent, 
-                                 "roving": roving, 
-                                 "inInterp": inInterp, "outInterp": outInterp};
-  }
-  
-  return keyContainer;
+  return {keyIndex: newKey, keyRoving: keyRoving};
 };
 
-var setKeyframes = function(prop, keyContainer) {
-  if(prop.numKeys !== 0) {
-    alert("ERROR : setKeyframes()" + "\n" + "- Property.numKeys !== 0");
-    return;
-  }
-  if(prop.propertyValueType !== keyContainer.propertyValueType) {
-    alert("ERROR : setKeyframes()" + "\n" + "- Mismatch PropertyValueType.");
-    return;
-  }
+var copyAllKeyframes = function(srcProp, dstProp) {
+  var roveKeys = [];
   
-  var keys = keyContainer.keys, newKey, roveKeys = [];
-  
-  for(var i = 0; i < keys.length; i++) {
-    newKey = prop.addKey(keys[i].keyTime);
-    
-    prop.setValueAtKey(newKey, keys[i].keyValue);
-    
-    prop.setTemporalAutoBezierAtKey(newKey, keys[i].autoBezierT);
-    prop.setTemporalContinuousAtKey(newKey, keys[i].contBezierT);
-    prop.setTemporalEaseAtKey(newKey, keys[i].inEase, keys[i].outEase);
-    
-    if(prop.propertyValueType === PropertyValueType.TwoD_SPATIAL || prop.propertyValueType === PropertyValueType.ThreeD_SPATIAL) {
-      prop.setSpatialAutoBezierAtKey(newKey, keys[i].autoBezierS);
-      prop.setSpatialContinuousAtKey(newKey, keys[i].contBezierS);
-      prop.setSpatialTangentsAtKey(newKey, keys[i].inTangent, keys[i].outTangent);
-      if(keys[i].roving) roveKeys.push(newKey);
-    }
-    
-    prop.setInterpolationTypeAtKey(newKey, keys[i].inInterp, keys[i].outInterp);
+  for(var k = 1; k <= srcProp.numKeys; k++) {
+    var returnObj = copyKeyframe(srcProp, k, dstProp);
+    if(returnObj.keyRoving) roveKeys.push(returnObj.keyIndex);
   }
   
   for(var i = 0; i < roveKeys.length; i++)
-    prop.setRovingAtKey(roveKeys[i], true);
+    dstProp.setRovingAtKey(roveKeys[i], true);
 };
 
-var transferProperty = function(srcProp, destProp) {
-  if(srcProp.propertyValueType !== destProp.propertyValueType) {
-    alert("ERROR : cloneProperty()" + "\n" + "- Mismatch PropertyValueType.");
+//----------------------------------------
+var transferProperty = function(srcProp, dstProp) {
+  if(srcProp.propertyValueType !== dstProp.propertyValueType) {
+    throw new Error("Mismatch PropertyValueType");
     return;
   }
   
-  if(destProp.canVaryOverTime && srcProp.numKeys !== 0) {
-    var keyContainer = collectAllKeyframes(srcProp);
-    if(keyContainer !== null) setKeyframes(destProp, keyContainer);
+  if(dstProp.canVaryOverTime && srcProp.numKeys > 0) {
+    copyAllKeyframes(srcProp, dstProp);
     
     while(srcProp.numKeys > 0)
       srcProp.removeKey(1);
-    srcProp.setValue(destProp.value);
+    
+    srcProp.setValue(dstProp.value);
   } else {
-    destProp.setValue(srcProp.value);
+    dstProp.setValue(srcProp.value);
   }
   /*
   if(destProp.canSetExpression) {
-    destProp.expression = srcProp.expression;
+    dstProp.expression = srcProp.expression;
     srcProp.expression = "";
   }
   */
 };
 
-var transferTransformProperties = function(srcLayer, destLayer) {
-  if(srcLayer.threeDLayer !== destLayer.threeDLayer) {
-    alert("ERROR : transferTransformProperties()" + "\n" + "- Mismatch Layer Dimention.");
+var transferTransformProperties = function(srcLayer, dstLayer) {
+  if(srcLayer.threeDLayer !== dstLayer.threeDLayer) {
+    throw new Error("Mismatch Layer Dimention");
     return;
   }
   
-  transferProperty(srcLayer.position, destLayer.position);
+  transferProperty(srcLayer.position, dstLayer.position);
   
-  if(destLayer.threeDLayer) {
-    transferProperty(srcLayer.orientation, destLayer.orientation);
-    transferProperty(srcLayer.rotationX, destLayer.rotationX);
-    transferProperty(srcLayer.rotationY, destLayer.rotationY);
-    transferProperty(srcLayer.rotationZ, destLayer.rotationZ);
+  if(dstLayer.threeDLayer) {
+    transferProperty(srcLayer.orientation, dstLayer.orientation);
+    transferProperty(srcLayer.rotationX, dstLayer.rotationX);
+    transferProperty(srcLayer.rotationY, dstLayer.rotationY);
+    transferProperty(srcLayer.rotationZ, dstLayer.rotationZ);
   } else {
-    transferProperty(srcLayer.rotation, destLayer.rotation);
+    transferProperty(srcLayer.rotation, dstLayer.rotation);
   }
   
-  transferProperty(srcLayer.scale, destLayer.scale);
+  transferProperty(srcLayer.scale, dstLayer.scale);
 };
 
 
 //----------------------------------------
 var addParent = function(layer, comp) {
-  if(!isAVLayerInstance(layer)) return null;
+  if(!instanceOfAVLayer(layer)) return null;
   
   var pivot = comp.layers.addNull();
   
