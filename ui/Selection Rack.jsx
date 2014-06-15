@@ -4,79 +4,79 @@
  */
 
 
-//========================================
-// Constants
-//========================================
-var NUM_BUTTONS = 4;
+(function(thisObj) {
+  //========================================
+  // Constants
+  //========================================
+  var NUM_BUTTONS = 4;
 
 
-//========================================
-// UI
-//========================================
-// UI Handler
-//----------------------------------------
-var btnOnClick = function() {
-  app.beginUndoGroup("Selection Rack");
-  
-  var comp = app.project.activeItem;
-  if(!(comp instanceof CompItem)) return;
+  //========================================
+  // UI
+  //========================================
+  // UI Handler
+  //----------------------------------------
+  var btnOnClick = function() {
+    app.beginUndoGroup("Selection Rack");
     
-  var shiftKey = ScriptUI.environment.keyboardState.shiftKey, 
-      selLayers = comp.selectedLayers;
-  
-  if(shiftKey) {
-    this.savedLayers = [];
-    for(var i = 0; i < selLayers.length; i++) {
-      this.savedLayers.push(selLayers[i]);
-    }
+    var comp = app.project.activeItem;
+    if(!(comp instanceof CompItem)) return;
+      
+    var shiftKey = ScriptUI.environment.keyboardState.shiftKey, 
+        selLayers = comp.selectedLayers;
     
-    if(this.savedLayers.length !== 0) {
-      this.comp = comp;
-      this.text = this.savedLayers.length;
-    } else {
-      this.comp = undefined;
-      this.text = "Empty";
-    }
-  } else {
-    if(this.comp === comp && this.savedLayers.length !== 0) {
+    if(shiftKey) {
+      this.savedLayers = [];
       for(var i = 0; i < selLayers.length; i++) {
-        selLayers[i].selected = false;
+        this.savedLayers.push(selLayers[i]);
       }
-      
-      var missingIdx = [];
-      for(var i = 0; i < this.savedLayers.length; i++) {
-        try {
-          this.savedLayers[i].selected = true;
-        } catch(e) {
-          missingIdx.push(i);
-        }
-      }
-      
-      while(missingIdx.length > 0)
-        this.savedLayers.splice(missingIdx.pop(), 1);
       
       if(this.savedLayers.length !== 0) {
+        this.comp = comp;
         this.text = this.savedLayers.length;
       } else {
         this.comp = undefined;
         this.text = "Empty";
       }
+    } else {
+      if(this.comp === comp && this.savedLayers.length !== 0) {
+        for(var i = 0; i < selLayers.length; i++) {
+          selLayers[i].selected = false;
+        }
+        
+        var missingIdx = [];
+        for(var i = 0; i < this.savedLayers.length; i++) {
+          try {
+            this.savedLayers[i].selected = true;
+          } catch(e) {
+            missingIdx.push(i);
+          }
+        }
+        
+        while(missingIdx.length > 0)
+          this.savedLayers.splice(missingIdx.pop(), 1);
+        
+        if(this.savedLayers.length !== 0) {
+          this.text = this.savedLayers.length;
+        } else {
+          this.comp = undefined;
+          this.text = "Empty";
+        }
+      }
+      
+      if(this.comp !== undefined && this.comp !== comp)
+        alert("This Slection is included in different Composition");
     }
     
-    if(this.comp !== undefined && this.comp !== comp)
-      alert("This Slection is included in different Composition");
-  }
-  
-  app.endUndoGroup();
-};
+    app.endUndoGroup();
+  };
 
 
-//========================================
-// Main Build UI
-//========================================
-(function(thisObj) {
-  var buildUI = function(thisObj) {
-    frame = (thisObj instanceof Panel)? thisObj : new Window("palette", "My window name", undefined);
+  //========================================
+  // Main Build UI
+  //========================================
+  var buildUI = function(owner) {
+    var frame = (owner instanceof Panel)? owner : new Window("palette", "My window name", undefined);
         
     frame.orientation = "row";
     frame.margins = 4;
