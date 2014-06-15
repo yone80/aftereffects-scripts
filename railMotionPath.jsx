@@ -3,12 +3,15 @@
  * @author twitter.com/yone80 (Satoru Yonekura)
  */
 
-//========================================
-// Constants
-//========================================
-// Expression
-//----------------------------------------
-var EXP_POSITION = """res = value;
+
+(function() {
+  
+  //========================================
+  // Constants
+  //========================================
+  // Expression
+  //----------------------------------------
+  var EXP_POSITION = """res = value;
 L = null; try{L = effect("Rail Layer")(1);}catch(e){}
 offset = 0; try{offset = L.effect("Offset")(1);}catch(e){}
 if(L !== null){
@@ -19,7 +22,7 @@ if(L !== null){
 }
 res;""";
 
-var EXP_POSITION_2D3D = """res = value;
+  var EXP_POSITION_2D3D = """res = value;
 L = null; try{L = effect("Rail Layer")(1);}catch(e){}
 offset = 0; try{offset = L.effect("Offset")(1);}catch(e){}
 if(L !== null){
@@ -30,7 +33,7 @@ if(L !== null){
 }
 res;""";
 
-var EXP_ORIENTATION = """res = value;
+  var EXP_ORIENTATION = """res = value;
 current = toWorld(anchorPoint);
 L = null; try{L = effect("Rail Layer")(1);}catch(e){}
 offset = 0; try{offset = L.effect("Offset")(1);}catch(e){}
@@ -43,7 +46,7 @@ if(L !== null){
 }
 res;""";
 
-var EXP_ROTATION = """res = value;
+  var EXP_ROTATION = """res = value;
 current = toWorld(anchorPoint);
 L = null; try{L = effect("Rail Layer")(1);}catch(e){}
 offset = 0; try{offset = L.effect("Offset")(1);}catch(e){}
@@ -56,7 +59,7 @@ if(L !== null){
 }
 res;""";
 
-var EXP_ROTATION_2D3D = """res = value;
+  var EXP_ROTATION_2D3D = """res = value;
 current = toWorld(anchorPoint);
 L = null; try{L = effect("Rail Layer")(1);}catch(e){}
 offset = 0; try{offset = L.effect("Offset")(1);}catch(e){}
@@ -70,58 +73,57 @@ if(L !== null){
 res;""";
 
 
-//========================================
-// Functions
-//========================================
-var instanceOfAVLayer = function(layer) {
-  return (layer instanceof AVLayer) || (layer instanceof ShapeLayer) || (layer instanceof TextLayer);
-};
+  //========================================
+  // Functions
+  //========================================
+  var instanceOfAVLayer = function(layer) {
+    return (layer instanceof AVLayer) || (layer instanceof ShapeLayer) || (layer instanceof TextLayer);
+  };
 
-var addExpressionController = function(layer, name, value, matchName) {
-  if(layer.property("Effects").property(name) !== null) return;
-  
-  var ctrl = layer.property("Effects").addProperty(matchName);
-  ctrl.name = name;
-  ctrl.property(1).setValue(value);
-};
-
-var setupLayer = function(layer, refLayer) {
-  if(!instanceOfAVLayer(layer)) return;
-  
-  var dimCheck = null;
-  
-  if(layer.threeDLayer && refLayer.threeDLayer)
-    dimCheck = "3D3D";
-  else if(!layer.threeDLayer && !refLayer.threeDLayer)
-    dimCheck = "2D2D";
-  else if(!layer.threeDLayer && refLayer.threeDLayer)
-    dimCheck = "2D3D";
+  var addExpressionController = function(layer, name, value, matchName) {
+    if(layer.property("Effects").property(name) !== null) return;
     
-  switch(dimCheck) {
-    case "3D3D":
-      layer.position.expression = EXP_POSITION;
-      layer.orientation.expression = EXP_ORIENTATION;
-      break;
-    case "2D2D":
-      layer.position.expression = EXP_POSITION;
-      layer.rotation.expression = EXP_ROTATION;
-      break;
-    case "2D3D":
-      layer.position.expression = EXP_POSITION_2D3D;
-      layer.rotation.expression = EXP_ROTATION_2D3D;
-      break;
-  }
-  
-  if(dimCheck !== null) {
-    addExpressionController(layer, "Rail Layer", refLayer.index, "ADBE Layer Control");
-    addExpressionController(layer, "Offset", 0, "ADBE Slider Control");
-  }
-};
+    var ctrl = layer.property("Effects").addProperty(matchName);
+    ctrl.name = name;
+    ctrl.property(1).setValue(value);
+  };
 
-//========================================
-// Main
-//========================================
-(function() {
+  var setupLayer = function(layer, refLayer) {
+    if(!instanceOfAVLayer(layer)) return;
+    
+    var dimCheck = null;
+    
+    if(layer.threeDLayer && refLayer.threeDLayer)
+      dimCheck = "3D3D";
+    else if(!layer.threeDLayer && !refLayer.threeDLayer)
+      dimCheck = "2D2D";
+    else if(!layer.threeDLayer && refLayer.threeDLayer)
+      dimCheck = "2D3D";
+      
+    switch(dimCheck) {
+      case "3D3D":
+        layer.position.expression = EXP_POSITION;
+        layer.orientation.expression = EXP_ORIENTATION;
+        break;
+      case "2D2D":
+        layer.position.expression = EXP_POSITION;
+        layer.rotation.expression = EXP_ROTATION;
+        break;
+      case "2D3D":
+        layer.position.expression = EXP_POSITION_2D3D;
+        layer.rotation.expression = EXP_ROTATION_2D3D;
+        break;
+    }
+    
+    if(dimCheck !== null) {
+      addExpressionController(layer, "Rail Layer", refLayer.index, "ADBE Layer Control");
+      addExpressionController(layer, "Offset", 0, "ADBE Slider Control");
+    }
+  };
+
+  //========================================
+  // Main
+  //========================================
   var comp = app.project.activeItem;
   if(!(comp instanceof CompItem)) return;
   if(comp.selectedLayers.length < 2) return;
@@ -138,4 +140,5 @@ var setupLayer = function(layer, refLayer) {
     setupLayer(selLayers[i], refLayer);
   
   app.endUndoGroup();
+  
 })();

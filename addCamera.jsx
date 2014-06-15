@@ -4,16 +4,17 @@
  */
 
 
-var addExpressionController = function(layer, name, value, matchName) {
-  if(layer.property("Effects").property(name) !== null) return;
-  
-  var ctrl = layer.property("Effects").addProperty(matchName);
-  ctrl.name = name;
-  ctrl.property(1).setValue(value);
-};
-
-
 (function() {
+  
+  var addExpressionController = function(layer, name, value, matchName) {
+    if(layer.property("Effects").property(name) !== null) return;
+    
+    var ctrl = layer.property("Effects").addProperty(matchName);
+    ctrl.name = name;
+    ctrl.property(1).setValue(value);
+  };
+
+
   var comp = app.project.activeItem;
   if(!(comp instanceof CompItem)) return;
   

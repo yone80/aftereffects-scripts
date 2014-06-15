@@ -3,15 +3,19 @@
  * @author twitter.com/yone80 (Satoru Yonekura)
  */
 
-
-var shiftLayer = function(layer, time) {
-  var inPoint = layer.stretch >= 0? layer.inPoint : layer.outPoint, 
-      margin = inPoint - layer.startTime;
-  
-  layer.startTime = time - margin;
-};
-
 (function(){
+  
+  var shiftLayer = function(layer, time) {
+    var inPoint = layer.stretch >= 0? layer.inPoint : layer.outPoint, 
+        margin = inPoint - layer.startTime;
+    
+    layer.startTime = time - margin;
+  };
+
+  
+  //========================================
+  // Main
+  //========================================
   var comp = app.project.activeItem;
   if(!(comp instanceof CompItem)) return;
   
@@ -35,4 +39,5 @@ var shiftLayer = function(layer, time) {
     shiftLayer(selLayers[i], start + dur * i);
   
   app.endUndoGroup();
+  
 })();

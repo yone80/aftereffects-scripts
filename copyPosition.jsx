@@ -5,6 +5,7 @@
 
 
 (function() {
+  
   var comp = app.project.activeItem;
   if(!(comp instanceof CompItem)) return;
   if(comp.selectedLayers.length < 2) return;
@@ -35,4 +36,5 @@
   }
   
   app.endUndoGroup();
+  
 })();

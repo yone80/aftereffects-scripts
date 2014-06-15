@@ -5,6 +5,7 @@
 
 
 (function(){
+  
   var comp = app.project.activeItem;
   if(!(comp instanceof CompItem)) return;
   if(comp.selectedLayers.length !== 1) return;
@@ -49,4 +50,5 @@
   layer.enabled = false;
   
   app.endUndoGroup();
+  
 })();
