@@ -1,0 +1,33 @@
+﻿/**
+ * math.jsxinc
+ * After Effects Script Utilities
+ * @author twitter.com/yone80 (Satoru Yonekura)
+ */
+
+
+(function(ns){
+  //$.writeln("math loaded");
+  
+  /**
+   * Convert degrees to radians
+   *
+   * @param {Number} degrees - angle
+   * @return {Number} radians angle
+   */
+  ns.degreesToRadians = function(degrees) {
+    return (degrees * Math.PI) / 180;
+  };
+
+  ns.rgbToHex = function(r, g, b) {
+    var rgb = b | (g << 8) | (r << 16);
+    return rgb //(0x1000000 | rgb).toString(16).slice(1);
+  };
+
+  ns.hexToRGB = function(hexColor) {
+    var r = hexColor >> 16;
+    var g = (hexColor & 0x00ff00) >> 8;
+    var b = hexColor & 0xff;
+    return [r, g, b];
+  };
+  
+})(this);

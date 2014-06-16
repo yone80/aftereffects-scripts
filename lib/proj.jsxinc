@@ -1,0 +1,54 @@
+﻿/**
+ * proj.jsxinc
+ * After Effects Script Utilities
+ * @author twitter.com/yone80 (Satoru Yonekura)
+ */
+
+
+(function(ns) {
+  //$.writeln("proj loaded");
+  
+  /**
+   * Number of times of used item in project
+   *
+   * @param {AVItem} item
+   * @return {Number} Number of times
+   */
+  ns.numTimesUsedItem = function(item) {
+    var comps = item.usedIn, 
+        counter = 0;
+    
+    for(var i = 0; i < comps.length; i++) {
+      var layers = comps[i].layers;
+      
+      for(var j = 1; j <= comps[i].numLayers; j++) {
+        if(layers[j].source === item)
+          counter++;
+      }
+    }
+    
+    return counter;
+  };
+  
+  
+  /**
+   * Search Item by Name
+   *
+   * @param {String} name
+   * @return {Item}
+   */
+  ns.searchItemByName = function(name) {
+    var proj = app.project, 
+        item = null;
+    
+    for(var i = 1; i <= proj.numItems; i++) {
+      if(proj.item(i).name === name) {
+        item = proj.item(i);
+        break;
+      }
+    }
+    
+    return item;
+  };
+
+})(this);

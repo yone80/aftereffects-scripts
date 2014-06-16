@@ -1,0 +1,120 @@
+﻿/**
+ * rect.jsxinc
+ * After Effects Script Utilities
+ * @author twitter.com/yone80 (Satoru Yonekura)
+ */
+
+
+(function(ns){
+  //$.writeln("rect loaded");
+  
+  /**
+   * Rectangle
+   *
+   * @constructor
+   */
+  ns.Rectangle = function(left, top, width, height) {
+    this.left = left;
+    this.top = top;
+    this.width = width;
+    this.height = height;
+  }
+
+  ns.Rectangle.prototype = {
+    union: function(rect){
+      var l = Math.min(this.left, rect.left), 
+          t = Math.min(this.top, rect.top), 
+          r = Math.max(this.left + this.width, rect.left + rect.width), 
+          b = Math.max(this.top + this.height, rect.top + rect.height);
+      
+      return new ns.Rectangle(l, t, r - l, b - t);
+    }
+  };
+  
+  
+  /**
+   * Get shape bounds
+   *
+   * @param {Shape} shape
+   * @return {Rectangle}
+   */
+  ns.getShapeBounds = function(shape) {
+    var rect, tmpRect, 
+        verts = shape.vertices, 
+        inTan = shape.inTangents, 
+        outTan = shape.outTangents;
+    
+    var x, y, minX, maxX, minY, maxY;
+    for(var i = 0; i < verts.length; i++) {
+      x = verts[i][0];
+      y = verts[i][1];
+      minX = Math.min(x, x + inTan[i][0], x + outTan[i][0]);
+      maxX = Math.max(x, x + inTan[i][0], x + outTan[i][0]);
+      minY = Math.min(y, y + inTan[i][1], y + outTan[i][1]);
+      maxY = Math.max(y, y + inTan[i][1], y + outTan[i][1]);
+      
+      tmpRect = new ns.Rectangle(minX, minY, maxX - minX, maxY - minY);
+      
+      if(!rect)
+        rect = tmpRect;
+      else
+        rect = rect.union(tmpRect);
+    }
+    
+    return rect;
+  };
+  
+  
+  /**
+   * Get mask bounds
+   *
+   * @param {MaskPropertyGroup} mask
+   * @return {Rectangle}
+   */
+  ns.getMaskBounds = function(mask) {
+    var maskPath = mask.property("Mask Path"), 
+        shape, rect;
+    
+    if(maskPath.numKeys > 0) {
+      var tmpRect;
+      
+      for(var k = 1; k <= maskPath.numKeys; k++) {
+        shape = maskPath.keyValue(k);
+        tmpRect = ns.getShapeBounds(shape);
+        
+        if(!rect)
+          rect = tmpRect;
+        else
+          rect = rect.union(tmpRect);
+      }
+    } else {
+      shape = maskPath.value;
+      rect = ns.getShapeBounds(shape);
+    }
+    
+    return rect;
+  };
+  
+  
+  /**
+   * Get all masks bounds
+   *
+   * @param {PropertyGroup} masks
+   * @return {Rectangle}
+   */
+  ns.getAllMasksBounds = function(masks) {
+    var masksBounds, tmpRect;
+    
+    for(var i = 1; i <= masks.numProperties; i++) {
+      tmpRect = aesu.getMaskBounds(masks.property(i));
+      
+      if(!masksBounds)
+        masksBounds = tmpRect;
+      else
+        masksBounds = masksBounds.union(tmpRect);
+    }
+    
+    return masksBounds;
+  };
+  
+})(this);

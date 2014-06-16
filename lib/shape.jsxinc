@@ -1,0 +1,105 @@
+﻿/**
+ * shape.jsxinc
+ * After Effects Script Utilities
+ * @author twitter.com/yone80 (Satoru Yonekura)
+ */
+
+
+(function(ns) {
+  //$.writeln("shape loaded");
+  
+  /**
+   * Transrate shape vertices
+   *
+   * @param {Shape} shape
+   * @param {Array} offset - 2D array
+   */
+  ns.translateShape = function(shape, offset) {
+    var verts = shape.vertices, 
+        newVerts = [];
+    
+    for(var i = 0; i < verts.length; i++)
+      newVerts.push(verts[i] + offset);
+    
+    shape.vertices = newVerts;
+  };
+
+  /**
+   * Rotate shape vertices
+   *
+   * @param {Shape} shape
+   * @param {Number} degrees - angle
+   */
+  ns.rotateShape = function(shape, degrees) {
+    var verts = shape.vertices, 
+        newVerts = [], 
+        inTan = shape.inTangents, 
+        newInTan = [], 
+        outTan = shape.outTangents, 
+        newOutTan = [], 
+        radians = ns.degreesToRadians(degrees);
+    
+    for(var i = 0; i < verts.length; i++) {
+      newVerts.push(ns.vec2rotate(verts[i], radians));
+      newInTan.push(ns.vec2rotate(inTan[i], radians));
+      newOutTan.push(ns.vec2rotate(outTan[i], radians));
+    }
+    
+    shape.vertices = newVerts;
+    shape.inTangents = newInTan;
+    shape.outTangents = newOutTan;
+  };
+
+  /**
+   * Scale shape vertices
+   *
+   * @param {Shape} shape
+   * @param {Array} scale - 2D array
+   */
+  ns.scaleShape = function(shape, scale) {
+    var verts = shape.vertices, 
+        newVerts = [], 
+        inTan = shape.inTangents, 
+        newInTan = [], 
+        outTan = shape.outTangents, 
+        newOutTan = [];
+    
+    for(var i = 0; i < verts.length; i++) {
+      newVerts.push(ns.vec2mul(verts[i], scale));
+      newInTan.push(ns.vec2mul(inTan[i], scale));
+      newOutTan.push(ns.vec2mul(outTan[i], scale));
+    }
+    
+    shape.vertices = newVerts;
+    shape.inTangents = newInTan;
+    shape.outTangents = newOutTan;
+  };
+
+  /**
+   * Rotate shape vertices
+   *
+   * @param {Shape} shape
+   * @param {Number} degrees - angle
+   * @param {Array} origin - 2D array
+   */
+  ns.rotateShapeWithOrigin = function(shape, degrees, origin) {
+    ns.translateShape(shape, origin * -1);
+    ns.rotateShape(shape, degrees);
+    ns.translateShape(shape, origin);
+  };
+
+
+  /**
+   * Rotate shape vertices
+   *
+   * @param {Shape} shape
+   * @param {Array} scale - 2D array
+   * @param {Array} origin - 2D array
+   */
+  ns.scaleShapeWithOrigin = function(shape, scale, origin) {
+    ns.translateShape(shape, origin * -1);
+    ns.scaleShape(shape, scale);
+    ns.translateShape(shape, origin);
+  };
+
+})(this);

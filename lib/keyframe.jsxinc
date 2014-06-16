@@ -1,0 +1,98 @@
+﻿/**
+ * keyframe.jsxinc
+ * After Effects Script Utilities
+ * @author twitter.com/yone80 (Satoru Yonekura)
+ */
+
+
+(function(ns) {
+  //$.writeln("keyframe loaded");
+  
+  /**
+   * Copy keyframe
+   *
+   * @param {Property} srcProp
+   * @param {Number} keyIndex
+   * @param {Property} dstProp
+   * @param {Number} [time]
+   * @return {Object}
+   */
+  ns.copyKeyframe = function(srcProp, keyIndex, dstProp, time) {
+    if(time === undefined) time = srcProp.keyTime(keyIndex);
+    var newKey = dstProp.addKey(time), 
+        keyRoving = false;
+    
+    dstProp.setValueAtKey(newKey, srcProp.keyValue(keyIndex));
+    
+    dstProp.setTemporalAutoBezierAtKey(newKey, srcProp.keyTemporalContinuous(keyIndex));
+    dstProp.setTemporalContinuousAtKey(newKey, srcProp.keyTemporalAutoBezier(keyIndex));
+    dstProp.setTemporalEaseAtKey(newKey, srcProp.keyInTemporalEase(keyIndex), 
+                                         srcProp.keyOutTemporalEase(keyIndex));
+    
+    if( srcProp.propertyValueType === PropertyValueType.TwoD_SPATIAL || 
+        srcProp.propertyValueType === PropertyValueType.ThreeD_SPATIAL) 
+    {
+      dstProp.setSpatialContinuousAtKey(newKey, srcProp.keySpatialContinuous(keyIndex));
+      dstProp.setSpatialAutoBezierAtKey(newKey, srcProp.keySpatialAutoBezier(keyIndex));
+      dstProp.setSpatialTangentsAtKey(newKey, srcProp.keyInSpatialTangent(keyIndex), 
+                                              srcProp.keyOutSpatialTangent(keyIndex));
+      keyRoving = srcProp.keyRoving(keyIndex);
+    }
+    
+    dstProp.setInterpolationTypeAtKey(newKey, srcProp.keyInInterpolationType(keyIndex), 
+                                              srcProp.keyOutInterpolationType(keyIndex));
+    
+    return {keyIndex: newKey, keyRoving: keyRoving};
+  };
+  
+  
+  /**
+   * Copy all keyframes
+   *
+   * @param {Property} srcProp
+   * @param {Property} dstProp
+   */
+  ns.copyAllKeyframes = function(srcProp, dstProp) {
+    var roveKeys = [];
+    
+    for(var k = 1; k <= srcProp.numKeys; k++) {
+      var returnObj = ns.copyKeyframe(srcProp, k, dstProp);
+      if(returnObj.keyRoving) roveKeys.push(returnObj.keyIndex);
+    }
+    
+    for(var i = 0; i < roveKeys.length; i++)
+      dstProp.setRovingAtKey(roveKeys[i], true);
+  };
+  
+  
+  /**
+   * transfer property value
+   *
+   * @param {Property} srcProp
+   * @param {Property} dstProp
+   */
+  ns.transferProperty = function(srcProp, dstProp) {
+    if(srcProp.propertyValueType !== dstProp.propertyValueType) {
+      throw new Error("Mismatch PropertyValueType");
+      return;
+    }
+    
+    if(dstProp.canVaryOverTime && srcProp.numKeys > 0) {
+      ns.copyAllKeyframes(srcProp, dstProp);
+      
+      while(srcProp.numKeys > 0)
+        srcProp.removeKey(1);
+      
+      srcProp.setValue(dstProp.value);
+    } else {
+      dstProp.setValue(srcProp.value);
+    }
+    /*
+    if(destProp.canSetExpression) {
+      dstProp.expression = srcProp.expression;
+      srcProp.expression = "";
+    }
+    */
+  };
+
+})(this);

@@ -1,0 +1,67 @@
+﻿/**
+ * layer.jsxinc
+ * After Effects Script Utilities
+ * @author twitter.com/yone80 (Satoru Yonekura)
+ */
+
+
+(function(ns) {
+  //$.writeln("layer loaded");
+  
+  /**
+   * instance of AVLayer
+   *
+   * @param {Layer} layer
+   * @return {Boolean}
+   */
+  ns.instanceOfAVLayer = function(layer) {
+    return (layer instanceof AVLayer) || (layer instanceof ShapeLayer) || (layer instanceof TextLayer);
+  };
+
+  
+  /**
+   * Shift layer start point
+   *
+   * @param {Layer} layer
+   * @param {Number} time
+   */
+  ns.shiftLayer = function(layer, time) {
+    var inPoint = layer.stretch >= 0? layer.inPoint : layer.outPoint, 
+        margin = inPoint - layer.startTime;
+    
+    layer.startTime = time - margin;
+  };
+  
+  
+  /**
+   * toWorld expression on script
+   *
+   * @param {Layer} layer
+   * @param {Array} point
+   * @param {Number} [t]
+   * @return {Array}
+   */
+  ns.toWorld = function(layer, point, t) {
+    var comp = layer.containingComp, 
+        dammyLayer = comp.layers.addNull(), 
+        dammySource = dammyLayer.source, 
+        pointString = "[" + point[0] + "," + point[1] + "," + point[2] + "]", 
+        result;
+    
+    if(t === undefined)
+      t = "";
+    else
+      t = "," + t;
+    
+    dammyLayer.moveToEnd();
+    dammyLayer.threeDLayer = layer.threeDLayer;
+    dammyLayer.position.expression = "thisComp.layer(" + layer.index + ").toWorld(" + pointString + t + ")";
+    result = dammyLayer.position.value;
+    
+    dammyLayer.remove();
+    dammySource.remove();
+    
+    return result;
+  };
+
+})(this);

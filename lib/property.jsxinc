@@ -1,0 +1,63 @@
+﻿/**
+ * property.jsxinc
+ * After Effects Script Utilities
+ * @author twitter.com/yone80 (Satoru Yonekura)
+ */
+
+
+(function(ns) {
+  //$.writeln("property loaded");
+  
+  /**
+   * Set property value
+   *
+   * @param {Property} property
+   * @param {*} newValue
+   */
+  ns.setPropertyValue = function(property, newValue) {
+    if(property.canVaryOverTime && property.numKeys > 0) {
+      var layer = property;
+      while(layer.containingComp === undefined) layer = layer.parentProperty;
+      property.setValueAtTime(layer.time, newValue);
+    } else {
+      property.setValue(newValue);
+    }
+  };
+  
+  
+  /**
+   * Sift property value
+   *
+   * @param {Property} property
+   * @param {*} newValue
+   */
+  ns.shiftPropertyValue = function(property, newValue) {
+    if(property.canVaryOverTime && property.numKeys > 0) {
+      var propValue = property.value, 
+          keyValue, diff;
+      
+      if(property.propertyValueType === PropertyValueType.ThreeD_SPATIAL || 
+         property.propertyValueType === PropertyValueType.ThreeD || 
+         property.propertyValueType === PropertyValueType.TwoD_SPATIAL || 
+         property.propertyValueType === PropertyValueType.TwoD)
+      {
+        diff = newValue - propValue;
+        
+        for(var k = 1; k <= property.numKeys; k++) {
+          keyValue = property.keyValue(k);
+          property.setValueAtKey(k, keyValue + diff);
+        }
+      }
+      
+      if(property.propertyValueType === PropertyValueType.OneD) {
+        diff = newValue - property.value;
+        
+        for(var k = 1; k <= property.numKeys; k++)
+          property.setValueAtKey(k, property.keyValue(k) + diff);
+      }
+    } else {
+      property.setValue(newValue);
+    }
+  };
+
+})(this);

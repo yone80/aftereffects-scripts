@@ -1,0 +1,53 @@
+﻿/**
+ * vector2.jsxinc
+ * After Effects Script Utilities
+ * @author twitter.com/yone80 (Satoru Yonekura)
+ */
+
+
+(function(ns) {
+  //$.writeln("vector2 loaded");
+  
+  ns.vec2mul = function(a, b) {
+    return [a[0] * b[0], a[1] * b[1]];
+  };
+
+  ns.vec2div = function(a, b) {
+    return [a[0] / b[0], a[1] / b[1]];
+  };
+
+  ns.vec2dot = function(a, b) {
+    return [a[0] * b[0] + a[1] * b[1]];
+  };
+
+  ns.vec2length = function(a) {
+    var v = [a[0] * a[0] + a[1] * a[1]];
+    return Math.sqrt(v);
+  };
+
+  ns.vec2distance = function(a, b) {
+    var v = this.sub(a, b);
+    return this.length(v);
+  };
+
+  ns.vec2normalize = function(a) {
+    var inv_length = 1 / this.length(a);
+    return [a[0] * inv_length, a[1] * inv_length];
+  };
+
+  /**
+   * Rotate vector2
+   *
+   * @param {Array} v - 2D array
+   * @param {Number} theta - radians angle
+   */
+  ns.vec2rotate = function(v, theta) {
+    var sinTheta = Math.sin(theta), 
+        cosTheta = Math.cos(theta), 
+        x = (v[0] * cosTheta) + (v[1] * -sinTheta), 
+        y = (v[0] * sinTheta) + (v[1] * cosTheta);
+    
+    return [x, y];
+  }
+
+})(this);
