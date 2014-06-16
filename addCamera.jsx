@@ -82,6 +82,7 @@
   cam.rotationX.expression = "thisComp.layer(\"" + ctrl.name + "\").effect(\"Pitch\")(1)";
   cam.rotationY.expression = "thisComp.layer(\"" + ctrl.name + "\").effect(\"Heading\")(1)";
   cam.rotationZ.expression = "thisComp.layer(\"" + ctrl.name + "\").effect(\"Bank\")(1)";
+  cam.orientation.expression = "[0, 0, 0]";
   
   ctrl.rotationZ.expression = "0";
     
