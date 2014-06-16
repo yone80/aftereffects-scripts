@@ -7,102 +7,46 @@
 (function() {
   
   //========================================
+  // Load Library
+  //========================================
+  var aesu = {};
+  
+  (function() { 
+    #include lib/layer.jsxinc;
+  }).call(aesu);
+  
+  (function() { 
+    #include lib/keyframe.jsxinc;
+  }).call(aesu);
+  
+  
+  //========================================
   // Functions
   //========================================
-  var instanceOfAVLayer = function(layer) {
-    return (layer instanceof AVLayer) || (layer instanceof ShapeLayer) || (layer instanceof TextLayer);
-  };
-
-  //----------------------------------------
-  var copyKeyframe = function(srcProp, keyIndex, dstProp, time) {
-    if(time === undefined) time = srcProp.keyTime(keyIndex);
-    var newKey = dstProp.addKey(time), 
-        keyRoving = false;
-    
-    dstProp.setValueAtKey(newKey, srcProp.keyValue(keyIndex));
-    
-    dstProp.setTemporalAutoBezierAtKey(newKey, srcProp.keyTemporalContinuous(keyIndex));
-    dstProp.setTemporalContinuousAtKey(newKey, srcProp.keyTemporalAutoBezier(keyIndex));
-    dstProp.setTemporalEaseAtKey(newKey, srcProp.keyInTemporalEase(keyIndex), 
-                                         srcProp.keyOutTemporalEase(keyIndex));
-    
-    if( srcProp.propertyValueType === PropertyValueType.TwoD_SPATIAL || 
-        srcProp.propertyValueType === PropertyValueType.ThreeD_SPATIAL) 
-    {
-      dstProp.setSpatialContinuousAtKey(newKey, srcProp.keySpatialContinuous(keyIndex));
-      dstProp.setSpatialAutoBezierAtKey(newKey, srcProp.keySpatialAutoBezier(keyIndex));
-      dstProp.setSpatialTangentsAtKey(newKey, srcProp.keyInSpatialTangent(keyIndex), 
-                                              srcProp.keyOutSpatialTangent(keyIndex));
-      keyRoving = srcProp.keyRoving(keyIndex);
-    }
-    
-    dstProp.setInterpolationTypeAtKey(newKey, srcProp.keyInInterpolationType(keyIndex), 
-                                              srcProp.keyOutInterpolationType(keyIndex));
-    
-    return {keyIndex: newKey, keyRoving: keyRoving};
-  };
-
-  var copyAllKeyframes = function(srcProp, dstProp) {
-    var roveKeys = [];
-    
-    for(var k = 1; k <= srcProp.numKeys; k++) {
-      var returnObj = copyKeyframe(srcProp, k, dstProp);
-      if(returnObj.keyRoving) roveKeys.push(returnObj.keyIndex);
-    }
-    
-    for(var i = 0; i < roveKeys.length; i++)
-      dstProp.setRovingAtKey(roveKeys[i], true);
-  };
-
-  //----------------------------------------
-  var transferProperty = function(srcProp, dstProp) {
-    if(srcProp.propertyValueType !== dstProp.propertyValueType) {
-      throw new Error("Mismatch PropertyValueType");
-      return;
-    }
-    
-    if(dstProp.canVaryOverTime && srcProp.numKeys > 0) {
-      copyAllKeyframes(srcProp, dstProp);
-      
-      while(srcProp.numKeys > 0)
-        srcProp.removeKey(1);
-      
-      srcProp.setValue(dstProp.value);
-    } else {
-      dstProp.setValue(srcProp.value);
-    }
-    /*
-    if(destProp.canSetExpression) {
-      dstProp.expression = srcProp.expression;
-      srcProp.expression = "";
-    }
-    */
-  };
-
   var transferTransformProperties = function(srcLayer, dstLayer) {
     if(srcLayer.threeDLayer !== dstLayer.threeDLayer) {
       throw new Error("Mismatch Layer Dimention");
       return;
     }
     
-    transferProperty(srcLayer.position, dstLayer.position);
+    aesu.transferProperty(srcLayer.position, dstLayer.position);
     
     if(dstLayer.threeDLayer) {
-      transferProperty(srcLayer.orientation, dstLayer.orientation);
-      transferProperty(srcLayer.rotationX, dstLayer.rotationX);
-      transferProperty(srcLayer.rotationY, dstLayer.rotationY);
-      transferProperty(srcLayer.rotationZ, dstLayer.rotationZ);
+      aesu.transferProperty(srcLayer.orientation, dstLayer.orientation);
+      aesu.transferProperty(srcLayer.rotationX, dstLayer.rotationX);
+      aesu.transferProperty(srcLayer.rotationY, dstLayer.rotationY);
+      aesu.transferProperty(srcLayer.rotationZ, dstLayer.rotationZ);
     } else {
-      transferProperty(srcLayer.rotation, dstLayer.rotation);
+      aesu.transferProperty(srcLayer.rotation, dstLayer.rotation);
     }
     
-    transferProperty(srcLayer.scale, dstLayer.scale);
+    aesu.transferProperty(srcLayer.scale, dstLayer.scale);
   };
 
 
   //----------------------------------------
   var addParent = function(layer, comp) {
-    if(!instanceOfAVLayer(layer)) return null;
+    if(!aesu.instanceOfAVLayer(layer)) return null;
     
     var pivot = comp.layers.addNull();
     
