@@ -1,7 +1,8 @@
 After Effects Scripts
 ====================
-After Effects CC でしか動作確認してないので他の環境で動くかは不明
+TODO - Github の wiki 使ってみたい
 
+After Effects CC でしか動作確認してないので他の環境で動くかは不明
 
 一部 #include を使うようにしたので、よくわからんって人は build フォルダに入っているバイナリ化したのを(.jsxbin)を使ってください 
 #### addCamera.jsx
