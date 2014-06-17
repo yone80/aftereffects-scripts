@@ -315,6 +315,25 @@
       }
     }
   };
+  
+  var btnSavePathOnClick = function() {
+    var shiftKey = ScriptUI.environment.keyboardState.shiftKey;
+    
+    if(shiftKey) {
+      this.propertyPath = cleanupPropertyPath();
+      this.text = this.propertyPath[this.propertyPath.length - 1].slice(0, 6);
+    } else {
+      if(this.propertyPath !== null) {
+        for(var i = 0; i < tb_propPath.length; i++) {
+          if(this.propertyPath[i] !== undefined)
+            tb_propPath[i].text = this.propertyPath[i];
+          else
+            tb_propPath[i].text = "";
+        }
+      }
+    }
+    
+  };
 
   var btnClearOnClick = function() {
     for(var i = 0; i < tb_propPath.length; i++) {
@@ -595,7 +614,7 @@
     //----------------------------------------
     // Property Path
     //----------------------------------------
-    var grp_prop, grp_prop_op, grp_prop_text, grp_prop_row1, 
+    var grp_prop, grp_prop_op, grp_prop_text, grp_prop_save, grp_prop_row1, 
         btn_prop_detect, btn_prop_clear, btn_prop_getType;
     
     grp_prop = frame.add("group");
@@ -623,6 +642,20 @@
     }
     
     tb_propPath[0].text = "position";
+    
+    grp_prop_save = grp_prop.add("panel");
+    grp_prop_save.spacing = 2;
+    grp_prop_save.margins = 2;
+    grp_prop_save.orientation = "row";
+    
+    var btn;
+    for(var i = 0; i < 4; i++) {
+      btn = grp_prop_save.add("button", undefined, "Empty");
+      btn.propertyPath = null;
+      
+      btn.preferredSize = [44, 22];
+      btn.onClick = btnSavePathOnClick;
+    }
     
     grp_prop_row1 = grp_prop.add("group");
     grp_prop_row1.spacing = 2;
