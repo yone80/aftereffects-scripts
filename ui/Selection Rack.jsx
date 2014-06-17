@@ -23,6 +23,7 @@
     if(!(comp instanceof CompItem)) return;
       
     var shiftKey = ScriptUI.environment.keyboardState.shiftKey, 
+        altKey = ScriptUI.environment.keyboardState.altKey, 
         selLayers = comp.selectedLayers;
     
     if(shiftKey) {
@@ -40,14 +41,15 @@
       }
     } else {
       if(this.comp === comp && this.savedLayers.length !== 0) {
-        for(var i = 0; i < selLayers.length; i++) {
-          selLayers[i].selected = false;
+        if(!altKey) {
+          for(var i = 0; i < selLayers.length; i++)
+            selLayers[i].selected = false;
         }
         
         var missingIdx = [];
         for(var i = 0; i < this.savedLayers.length; i++) {
           try {
-            this.savedLayers[i].selected = true;
+            this.savedLayers[i].selected = altKey? false : true;
           } catch(e) {
             missingIdx.push(i);
           }
