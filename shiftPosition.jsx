@@ -17,11 +17,11 @@
       refAnchorVal = [0, 0, 0];
   
   if(!(refLayer instanceof CameraLayer) && !(refLayer instanceof LightLayer))
-    refAnchorVal = refLayer.anchorPoint.value;
+    refAnchorVal = refLayer.property("ADBE Transform Group").property("ADBE Anchor Point").value;
   
   var curPos, saveParent, curPosVal, keyValue;
   for(var i = 0; i < selLayers.length; i++) {
-    curPos = selLayers[i].position;
+    curPos = selLayers[i].property("ADBE Transform Group").property("ADBE Position");
     saveParent = selLayers[i].parent;
     
     selLayers[i].parent = refLayer;
