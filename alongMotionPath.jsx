@@ -41,7 +41,7 @@ if(L !== null){
   inP = L.inPoint; outP = L.outPoint;
   offset = (offset + effect("Offset")(1)) % 100;
   t = linear(offset, 0, 100, inP, outP);
-  next = L.toWorld(L.anchorPoint, t);
+  next = L.toWorld(L.anchorPoint, t + 0.001);
   res = lookAt(current, next);
 }
 res;""";
