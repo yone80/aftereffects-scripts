@@ -30,7 +30,9 @@ AE CC 2018
 
 
 ### ScriptUI Panels
-#### Property Controller.jsx
-選択したレイヤーの指定したプロパティをまとめて変更 - [Demo](http://www.screencast.com/t/E4PBqe7o) - [説明画像](https://app.box.com/s/f9b86sfpyfmx519ob6ns)
+
 #### Selection Rack.jsx
 レイヤー選択範囲を "shift+click" で一時的に保存、click で呼び出し - [Demo](http://www.screencast.com/t/gzkCADn5TakM)
+
+#### Property Controller.jsx
+選択したレイヤーの指定したプロパティをまとめて変更 - [Demo](http://www.screencast.com/t/E4PBqe7o) - [説明画像](https://app.box.com/s/f9b86sfpyfmx519ob6ns)
