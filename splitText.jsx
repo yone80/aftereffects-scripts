@@ -10,7 +10,7 @@
   if(!(comp instanceof CompItem)) return;
   if(comp.selectedLayers.length !== 1) return;
 
-  app.beginUndoGroup("Decompose Text");
+  app.beginUndoGroup("Split Text");
 
   var layer = comp.selectedLayers[0];
   if(!(layer instanceof TextLayer)) return;

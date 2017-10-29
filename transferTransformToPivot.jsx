@@ -1,5 +1,5 @@
 ﻿/**
- * transferTransform.jsx
+ * transferTransformToPivot.jsx
  * @author twitter.com/yone80 (Satoru Yonekura)
  */
 
@@ -29,18 +29,14 @@
       return;
     }
     
-    aesu.transferProperty(srcLayer.position, dstLayer.position);
+    aesu.transferProperty(srcLayer.property("ADBE Transform Group").property("ADBE Position"), dstLayer.property("ADBE Transform Group").property("ADBE Position"));
     
     if(dstLayer.threeDLayer) {
-      aesu.transferProperty(srcLayer.orientation, dstLayer.orientation);
-      aesu.transferProperty(srcLayer.rotationX, dstLayer.rotationX);
-      aesu.transferProperty(srcLayer.rotationY, dstLayer.rotationY);
-      aesu.transferProperty(srcLayer.rotationZ, dstLayer.rotationZ);
-    } else {
-      aesu.transferProperty(srcLayer.rotation, dstLayer.rotation);
+      aesu.transferProperty(srcLayer.property("ADBE Transform Group").property("ADBE Orientation"), dstLayer.property("ADBE Transform Group").property("ADBE Orientation"));
+      aesu.transferProperty(srcLayer.property("ADBE Transform Group").property("ADBE Rotate X"), dstLayer.property("ADBE Transform Group").property("ADBE Rotate X"));
+      aesu.transferProperty(srcLayer.property("ADBE Transform Group").property("ADBE Rotate Y"), dstLayer.property("ADBE Transform Group").property("ADBE Rotate Y"));
     }
-    
-    aesu.transferProperty(srcLayer.scale, dstLayer.scale);
+    aesu.transferProperty(srcLayer.property("ADBE Transform Group").property("ADBE Rotate Z"), dstLayer.property("ADBE Transform Group").property("ADBE Rotate Z"));
   };
 
 
@@ -64,17 +60,13 @@
     
     layer.parent = pivot;
     
-    layer.position.setValue([0, 0, 0]);
+    layer.property("ADBE Transform Group").property("ADBE Position").setValue([0, 0, 0]);
     if(layer.threeDLayer) {
-      layer.orientation.setValue([0, 0, 0]);
-      layer.rotationX.setValue(0);
-      layer.rotationY.setValue(0);
-      layer.rotationZ.setValue(0);
-      layer.scale.setValue([100, 100, 100]);
-    } else {
-      layer.rotation.setValue(0);
-      layer.scale.setValue([100, 100]);
-    }
+      layer.property("ADBE Transform Group").property("ADBE Orientation").setValue([0, 0, 0]);
+      layer.property("ADBE Transform Group").property("ADBE Rotate X").setValue(0);
+      layer.property("ADBE Transform Group").property("ADBE Rotate Y").setValue(0);
+    } 
+    layer.property("ADBE Transform Group").property("ADBE Rotate Z").setValue(0);
     
     return pivot;
   };
@@ -86,7 +78,7 @@
   var comp = app.project.activeItem;
   if(!(comp instanceof CompItem)) return;
   
-  app.beginUndoGroup("Transfer Transform");
+  app.beginUndoGroup("Transfer Transform to Pivot");
   
   var selLayers = comp.selectedLayers,
       newLayers = [];

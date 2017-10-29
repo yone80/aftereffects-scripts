@@ -39,5 +39,5 @@
     shiftLayer(selLayers[i], start + dur * i);
   
   app.endUndoGroup();
-  
+
 })();

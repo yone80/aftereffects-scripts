@@ -28,16 +28,14 @@
     if(layer.parent !== null)
       pivot.parent = layer.parent;
       
-    pivot.position.setValue(layer.position.value);
+    pivot.property("ADBE Transform Group").property("ADBE Position").setValue(layer.property("ADBE Transform Group").property("ADBE Position").value);
     
     if(layer.threeDLayer) {
-      pivot.orientation.setValue(layer.orientation.value);
-      pivot.rotationX.setValue(layer.rotationX.value);
-      pivot.rotationY.setValue(layer.rotationY.value);
-      pivot.rotationZ.setValue(layer.rotationZ.value);
-    } else {
-      pivot.rotation.setValue(layer.rotation.value);
+      pivot.property("ADBE Transform Group").property("ADBE Orientation").setValue(layer.property("ADBE Transform Group").property("ADBE Orientation").value);
+      pivot.property("ADBE Transform Group").property("ADBE Rotate X").setValue(layer.property("ADBE Transform Group").property("ADBE Rotate X").value);
+      pivot.property("ADBE Transform Group").property("ADBE Rotate Y").setValue(layer.property("ADBE Transform Group").property("ADBE Rotate Y").value);
     }
+    pivot.property("ADBE Transform Group").property("ADBE Rotate Z").setValue(layer.property("ADBE Transform Group").property("ADBE Rotate Z").value);
     
     layer.parent = pivot;
     return pivot;
