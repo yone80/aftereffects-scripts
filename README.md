@@ -25,6 +25,9 @@ AE CC 2018
 #### alongMotionPath.jsx
 最後に選択したレイヤーのモーションパスに沿うエクスプレッションを他の選択したレイヤーに適用
 
+#### cropSolidToMask.jsx
+選択した平面レイヤーのオリジナルを全マスクを含むサイズに変更
+
 
 ### ScriptUI Panels
 #### Property Controller.jsx

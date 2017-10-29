@@ -36,7 +36,7 @@
   // Functions
   //========================================
   var cropSolidToMask = function(layer) {
-    var masks = layer.property("Masks"), 
+    var masks = layer.property("ADBE Mask Parade"), 
         masksBounds;
     
     masksBounds = aesu.getAllMasksBounds(masks);
@@ -47,7 +47,7 @@
         newWidth = Math.ceil(masksBounds.width), 
         newHeight = Math.ceil(masksBounds.height);
     
-    var originalAnchor = layer.anchorPoint.value;
+    var originalAnchor = layer.property("ADBE Transform Group").property("ADBE Anchor Point").value;
     
     
     if(aesu.numTimesUsedItem(layer.source) > 1) {
@@ -74,13 +74,13 @@
     
     layer.source.width = newWidth;
     layer.source.height = newHeight;
-    layer.anchorPoint.setValue(originalAnchor - [masksBounds.left, masksBounds.top, 0]);
+    layer.property("ADBE Transform Group").property("ADBE Anchor Point").setValue(originalAnchor - [masksBounds.left, masksBounds.top, 0]);
     
     
     // reScale and rePosition shape
     var maskPath, shape;
     for(var i = 1; i <= masks.numProperties; i++) {
-      maskPath = masks.property(i).property("Mask Path");
+      maskPath = masks.property(i).property("ADBE Mask Shape");
       shape = maskPath.value;
       
       aesu.scaleShape(shape, [originalWidth / newWidth,  originalHeight / newHeight]);
@@ -105,7 +105,7 @@
     if((selLayers[i] instanceof AVLayer) && 
        (selLayers[i].source.mainSource instanceof SolidSource))
     {
-      if(selLayers[i].property("Masks").numProperties !== 0)
+      if(selLayers[i].property("ADBE Mask Parade").numProperties !== 0)
         cropSolidToMask(selLayers[i]);
     }
   }
